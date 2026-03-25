@@ -4,7 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Quest;
+using Quest.Models.DTO;
 using Quest.Models.Matches;
+using Quest.Models.Sports;
+using Quest.Models.Stadiums;
+using Quest.Models.Teams;
 
 public class MatchService : IMatchService
 {
@@ -33,7 +37,6 @@ public class MatchService : IMatchService
   }
   public async Task<MatchEntity> GetMatchByIdAsync(int id)
   {
-    if (id < 0) return new MatchEntity { };
     return await _context.Matches
     .Include(m => m.Sport)
     .Include(m => m.HomeTeam)
@@ -44,16 +47,27 @@ public class MatchService : IMatchService
     .Include(m => m.Result).ThenInclude(r => r.PeriodScores)
     .AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
   }
-  public async Task AddMatchAsync(MatchEntity match)
+  public async Task<int> AddMatchAsync(MatchAddDto dto)
   {
-    try
+    var match = new MatchEntity
     {
-      await _context.Matches.AddAsync(match);
-      await _context.SaveChangesAsync();
-    }
-    catch (Exception e)
-    {
-      Console.WriteLine(e.Message);
-    }
+      _sport_id = dto.SportId,
+      _home_team_id = dto.HomeTeamId,
+      _away_team_id = dto.AwayTeamId,
+      _stadium_id = dto.StadiumId,
+      Season = dto.Season,
+      Status = dto.Status,
+      DateVenue = dto.DateVenue,
+      TimeVenue = dto.TimeVenue
+    };
+    await _context.Matches.AddAsync(match);
+    await _context.SaveChangesAsync();
+    return match.Id;
   }
+  public async Task<List<SportEntity>> GetSportsAsync()
+    => await _context.Sports.AsNoTracking().ToListAsync();
+  public Task<List<TeamEntity>> GetTeamsAsync()
+    => _context.Teams.AsNoTracking().ToListAsync();
+  public Task<List<StadiumEntity>> GetStadiumAsync()
+    => _context.Stadiums.AsNoTracking().ToListAsync();
 }

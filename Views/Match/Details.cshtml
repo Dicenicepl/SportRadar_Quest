@@ -1,0 +1,99 @@
+@model Quest.Models.Matches.MatchEntity
+
+@{
+    ViewData["Title"] = $"{Model.HomeTeam?.Name} vs {Model.AwayTeam?.Name}";
+}
+
+<div class="container">
+    <a href="/matches" class="back-link">← Back to matches</a>
+
+    <h1>@Model.HomeTeam?.Name vs @Model.AwayTeam?.Name</h1>
+
+    <div class="detail-grid">
+        <div class="detail-card">
+            <h2>Match info</h2>
+            <dl>
+                <dt>Date</dt>
+                <dd>@Model.DateVenue.ToString("dd.MM.yyyy")</dd>
+
+                <dt>Time</dt>
+                <dd>@Model.TimeVenue.ToString("HH:mm")</dd>
+
+                <dt>Sport</dt>
+                <dd>@Model.Sport?.Name</dd>
+
+                <dt>Season</dt>
+                <dd>@Model.Season</dd>
+
+                <dt>Stadium</dt>
+                <dd>@(Model.Stadium?.Name ?? "—")</dd>
+
+                <dt>Status</dt>
+                <dd>
+                    <span class="badge badge-@Model.Status.ToString().ToLower()">
+                        @Model.Status
+                    </span>
+                </dd>
+            </dl>
+        </div>
+
+        @if (Model.Result != null)
+        {
+            <div class="detail-card">
+                <h2>Result</h2>
+                <div class="score">
+                    <span>@Model.HomeTeam?.Name</span>
+                    <strong>@Model.Result.HomeGoals : @Model.Result.AwayGoals</strong>
+                    <span>@Model.AwayTeam?.Name</span>
+                </div>
+
+                @if (Model.Result.Winner != null)
+                {
+                    <p>Winner: <strong>@Model.Result.Winner.Name</strong></p>
+                }
+
+                @if (Model.Result.Goals?.Any() == true)
+                {
+                    <h3>Goals</h3>
+                    <ul>
+                        @foreach (var goal in Model.Result.Goals.OrderBy(g => g.Minute))
+                        {
+                            <li>@goal.Minute' — @goal.ScorerName @if (!string.IsNullOrEmpty(goal.AssistName)) { <span class="muted">(assist: @goal.AssistName)</span> }</li>
+                        }
+                    </ul>
+                }
+
+                @if (Model.Result.Cards?.Any() == true)
+                {
+                    <h3>Cards</h3>
+                    <ul>
+                        @foreach (var card in Model.Result.Cards.OrderBy(c => c.Minute))
+                        {
+                            <li>@card.Minute' — @card.PlayerName <span class="badge badge-@card.CardType.ToString().ToLower()">@card.CardType</span></li>
+                        }
+                    </ul>
+                }
+
+                @if (Model.Result.PeriodScores?.Any() == true)
+                {
+                    <h3>Period scores</h3>
+                    <table>
+                        <thead>
+                            <tr><th>Period</th><th>Home</th><th>Away</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var period in Model.Result.PeriodScores.OrderBy(p => p.PeriodNumber))
+                            {
+                                <tr>
+                                    <td>@period.PeriodNumber</td>
+                                    <td>@period.HomeScore</td>
+                                    <td>@period.AwayScore</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        }
+    </div>
+</div>

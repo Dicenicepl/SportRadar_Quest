@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Quest.Models.DTO;
 using Quest.Models.Matches;
 
 [ApiController]
@@ -14,27 +15,28 @@ public class MatchApiController : ControllerBase
   {
     _matchService = matchService;
   }
-  [HttpGet("get-all")]
+  [HttpGet()]
   public async Task<IActionResult> GetAll([FromQuery] string? sport = null, [FromQuery] DateOnly? date = null)
   {
-    var result = await _matchService.GetAllMatchesAsync(sport, date);
-    return Ok(result);
+    var data = await _matchService.GetAllMatchesAsync(sport, date);
+    return Ok(data);
   }
 
-  [HttpGet("get")]
-  public async Task<IActionResult> GetById([FromQuery] int id)
+  [HttpGet("{id}")]
+  public async Task<IActionResult> GetById(int id)
   {
-    var result = await _matchService.GetMatchByIdAsync(id);
-    return Ok(result);
+    var data = await _matchService.GetMatchByIdAsync(id);
+    if (data == null) return NotFound();
+    return Ok(data);
   }
-  [HttpPost("add")]
-  public async Task<ActionResult<MatchEntity>> Add([FromBody] MatchEntity match)
+  [HttpPost()]
+  public async Task<ActionResult<MatchEntity>> Add([FromBody] MatchAddDto dto)
   {
     if (!ModelState.IsValid)
       return BadRequest(ModelState);
 
-    await _matchService.AddMatchAsync(match);
+    var matchId = await _matchService.AddMatchAsync(dto);
 
-    return CreatedAtAction(nameof(GetById), new { id = match.Id }, match);
+    return CreatedAtAction(nameof(GetById), new { id = matchId }, dto);
   }
 }

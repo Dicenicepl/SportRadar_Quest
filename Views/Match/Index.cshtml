@@ -1,0 +1,71 @@
+@model List<Quest.Models.Matches.MatchEntity>
+
+@{
+    ViewData["Title"] = "Matches";
+}
+
+<div class="container">
+    <div class="page-header">
+        <h1>Matches</h1>
+        <a href="/matches/add" class="btn btn-primary">+ Add match</a>
+    </div>
+
+    <form method="get" class="filters">
+        <input type="text" name="sport" value="@Context.Request.Query["sport"]" placeholder="Sport (e.g. Football)" />
+        <input type="date" name="date" value="@Context.Request.Query["date"]" />
+        <button type="submit" class="btn">Filter</button>
+        <a href="/matches" class="btn btn-secondary">Clear</a>
+    </form>
+
+    @if (!Model.Any())
+    {
+        <p class="empty">No matches found.</p>
+    }
+    else
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Sport</th>
+                    <th>Home</th>
+                    <th>Away</th>
+                    <th>Result</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var match in Model)
+                {
+                    <tr>
+                        <td>@match.DateVenue.ToString("dd.MM.yyyy")</td>
+                        <td>@match.TimeVenue.ToString("HH:mm")</td>
+                        <td>@match.Sport?.Name</td>
+                        <td>@match.HomeTeam?.Name</td>
+                        <td>@match.AwayTeam?.Name</td>
+                        <td>
+                            @if (match.Result != null)
+                            {
+                                <span>@match.Result.HomeGoals : @match.Result.AwayGoals</span>
+                            }
+                            else
+                            {
+                                <span class="muted">—</span>
+                            }
+                        </td>
+                        <td>
+                            <span class="badge badge-@match.Status.ToString().ToLower()">
+                                @match.Status
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/matches/@match.Id">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

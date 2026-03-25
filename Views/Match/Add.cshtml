@@ -1,0 +1,95 @@
+@model Quest.Models.DTO.MatchAddDto
+
+@{
+    ViewData["Title"] = "Add match";
+}
+
+<div class="container">
+    <a href="/matches" class="back-link">← Back to matches</a>
+
+    <h1>Add match</h1>
+
+    <form method="post" action="/matches/add" class="form">
+        @Html.AntiForgeryToken()
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="SportId">Sport</label>
+                <select name="SportId" id="SportId" required>
+                    <option value="">— select —</option>
+                    @foreach (var sport in ViewBag.Sports as List<Quest.Models.Sports.SportEntity> ?? new())
+                    {
+                        <option value="@sport.Id">@sport.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Season">Season</label>
+                <input type="number" name="Season" id="Season" value="@DateTime.Now.Year" required />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="HomeTeamId">Home team</label>
+                <select name="HomeTeamId" id="HomeTeamId" required>
+                    <option value="">— select —</option>
+                    @foreach (var team in ViewBag.Teams as List<Quest.Models.Teams.TeamEntity> ?? new())
+                    {
+                        <option value="@team.Id">@team.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="AwayTeamId">Away team</label>
+                <select name="AwayTeamId" id="AwayTeamId" required>
+                    <option value="">— select —</option>
+                    @foreach (var team in ViewBag.Teams as List<Quest.Models.Teams.TeamEntity> ?? new())
+                    {
+                        <option value="@team.Id">@team.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="DateVenue">Date</label>
+                <input type="date" name="DateVenue" id="DateVenue" required />
+            </div>
+
+            <div class="form-group">
+                <label for="TimeVenue">Time (UTC)</label>
+                <input type="time" name="TimeVenue" id="TimeVenue" required />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="StadiumId">Stadium <span class="muted">(optional)</span></label>
+                <select name="StadiumId" id="StadiumId">
+                    <option value="">— none —</option>
+                    @foreach (var stadium in ViewBag.Stadiums as List<Quest.Models.Stadiums.StadiumEntity> ?? new())
+                    {
+                        <option value="@stadium.Id">@stadium.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Status">Status</label>
+                <select name="Status" id="Status" required>
+                    <option value="SCHEDULED">Scheduled</option>
+                    <option value="PLAYED">Played</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save match</button>
+            <a href="/matches" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
