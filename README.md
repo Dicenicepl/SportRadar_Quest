@@ -53,7 +53,7 @@ Edit `appsettings.Development.json` and set your PostgreSQL connection string:
 ```json
 {
   "ConnectionStrings": {
-     "sportradarDatabase": "User ID=;Password=;Host=;Port=;Database="
+    "sportradarDatabase": "User ID=;Password=;Host=;Port=;Database="
   }
 }
 ```
@@ -64,8 +64,6 @@ Edit `appsettings.Development.json` and set your PostgreSQL connection string:
 dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
-
-> The application also runs `MigrateAsync()` automatically on startup, so `database update` is optional if you just want to run the app.
 
 ### 4. Run the application
 
@@ -126,7 +124,6 @@ Foreign keys use the `_` prefix convention (e.g. `_sport_id`, `_home_team_id`) a
 
 ## Assumptions & decisions
 
-- **Stadium is required** in the current model (`_stadium_id` is non-nullable). The seeder uses a placeholder "Unknown" stadium for matches where venue data was not provided in the source JSON.
-- **No authentication** — the app is a read/write calendar without user accounts, as the exercise did not require it.
-- **Seed data** is based on the AFC Champions League 2024 Round of 16 matches provided in the exercise JSON. The Final entry (Urawa Reds, no home team) was omitted from the seed as the data was incomplete.
-- **EF Core migrations** are not committed to the repository — run `dotnet ef migrations add InitialCreate` locally as described above.
+- **EF Core & Relationships** — During development, I explored more advanced EF Core configurations. I decided to use .OnDelete(DeleteBehavior.Restrict) and .ThenInclude() to ensure data integrity and handle complex nested relationships efficiently. It was a great learning point on how to handle cascading deletes in a relational database.
+- **The "Blank Page" Challenge** — Analyzing the task, I initially felt a moment of "freeze." While the requirements seemed clear and on my level, the freedom in designing the architecture was a double-edged sword. I ultimately decided to keep the domain model lean; for example, I considered creating a full PlayerEntity, but decided to stick to simple naming to avoid over-engineering and stay focused on the core requirements.
+- **Balanced Use of AI** — I made a conscious decision to limit AI assistance. I used it primarily to speed up repetitive tasks (boilerplate code) while ensuring that the core logic and architectural decisions reflect my own thinking and problem-solving process.
